@@ -1,0 +1,138 @@
+﻿@{
+    ViewData["Title"] = "ChatGPT UI";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatGPT UI</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+    <style>
+        .chat-container {
+            max-width: 600px;
+            margin: auto;
+        }
+
+        .chat-box {
+            height: 400px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+            background: #f9f9f9;
+        }
+
+        .user-message {
+            text-align: right;
+            background-color: #007bff;
+            color: white;
+            padding: 5px;
+            border-radius: 5px;
+            margin-bottom: 5px;
+        }
+
+        .bot-message {
+            text-align: left;
+            background-color: #28a745;
+            color: white;
+            padding: 5px;
+            border-radius: 5px;
+            margin-bottom: 5px;
+        }
+
+        .typing-indicator {
+            font-style: italic;
+            color: gray;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5 chat-container">
+        <h2 class="text-center">Chat with LLM</h2>
+        <div id="chat-box" class="chat-box">
+            <div id="typing-indicator" class="typing-indicator">AI is typing...</div>
+        </div>
+        <div class="input-group">
+            <input type="text" id="question-input" class="form-control" placeholder="Ask something..." />
+            <button class="btn btn-primary" onclick="askLLM()">Send</button>
+        </div>
+    </div>
+
+    <script>
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/chatHub")
+            .configureLogging(signalR.LogLevel.Information)
+            .build();
+
+                connection.on("ReceiveMessage", function (message) {
+            let chatBox = document.getElementById("chat-box");
+            let typingIndicator = document.getElementById("typing-indicator");
+
+            // Hide typing indicator once response starts coming
+            typingIndicator.style.display = "none";
+
+            // Check if we're already building a response for this question
+            let botMessages = chatBox.getElementsByClassName("bot-message");
+            let botMessage = botMessages[botMessages.length - 1]; // Get the latest bot message
+
+            if (!botMessage || botMessage.dataset.completed === "true") {
+                // Create a NEW bot message if this is a new response
+                botMessage = document.createElement("div");
+                botMessage.className = "bot-message";
+                botMessage.style.color = "white"; // Green text for responses
+                botMessage.dataset.completed = "false"; // Mark as incomplete
+                chatBox.appendChild(botMessage);
+            }
+
+            // Split multiple streamed messages in case they arrive in chunks
+            const messages = message.split("data: ").filter(m => m.trim() !== "");
+
+            messages.forEach((msg) => {
+                try {
+                    const parsedData = JSON.parse(msg.trim());
+                    if (parsedData.response) {
+                        botMessage.textContent += parsedData.response;
+                    }
+                    if (parsedData.done) {
+                        botMessage.dataset.completed = "true"; // Mark as complete
+                    }
+                } catch (error) {
+                    console.error("Error parsing JSON from SSE:", error);
+                }
+            });
+
+            // Auto-scroll to latest message
+            chatBox.scrollTop = chatBox.scrollHeight;
+        });
+
+        async function askLLM() {
+            let questionInput = document.getElementById("question-input");
+            let chatBox = document.getElementById("chat-box");
+            let typingIndicator = document.getElementById("typing-indicator");
+            let question = questionInput.value.trim();
+            if (!question) return;
+
+            let userMsg = document.createElement("div");
+            userMsg.className = "user-message";
+            userMsg.textContent = question;
+            chatBox.appendChild(userMsg);
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            questionInput.value = "";
+
+            // Show typing indicator while waiting for response
+            typingIndicator.style.display = "block";
+
+            await connection.invoke("SendQuestion", question);
+        }
+
+        connection.start().catch(function (err) {
+            return console.error(err.toString());
+        });
+    </script>
+</body>
+</html>

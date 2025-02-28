@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35527.113
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatTest", "ChatTest.csproj", "{4D2411F1-5A17-4D40-BD79-AE822D6FFCA6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatTestMvc", "..\ChatTestMvc\ChatTestMvc.csproj", "{DDC0DE7B-4A84-4064-8E7E-442C6EEEDD42}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4D2411F1-5A17-4D40-BD79-AE822D6FFCA6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4D2411F1-5A17-4D40-BD79-AE822D6FFCA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4D2411F1-5A17-4D40-BD79-AE822D6FFCA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4D2411F1-5A17-4D40-BD79-AE822D6FFCA6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DDC0DE7B-4A84-4064-8E7E-442C6EEEDD42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DDC0DE7B-4A84-4064-8E7E-442C6EEEDD42}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DDC0DE7B-4A84-4064-8E7E-442C6EEEDD42}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DDC0DE7B-4A84-4064-8E7E-442C6EEEDD42}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
