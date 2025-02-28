@@ -68,7 +68,7 @@
             .configureLogging(signalR.LogLevel.Information)
             .build();
 
-                connection.on("ReceiveMessage", function (message) {
+        connection.on("ReceiveMessage", function (message) {
             let chatBox = document.getElementById("chat-box");
             let typingIndicator = document.getElementById("typing-indicator");
 
@@ -130,9 +130,18 @@
             await connection.invoke("SendQuestion", question);
         }
 
+        // ✅ Fix: Allow Enter Key to Send Message
+        document.getElementById("question-input").addEventListener("keydown", function (event) {
+            if (event.key === "Enter") {
+                event.preventDefault(); // Prevents line break in input field
+                askLLM(); // Calls the function to send the message
+            }
+        });
+
         connection.start().catch(function (err) {
             return console.error(err.toString());
         });
     </script>
+
 </body>
 </html>
